@@ -4,19 +4,19 @@ from ..config import color_list1, color_list2
 import pandas as pd
 
 from .scatterplot import Scatterplot
+from .histogram import Histogram
 
+# # Testing df for left column input graphs
+# data = {
+#     "shoe_price" : [100, 150, 300, 550],
+#     "coolness" : [80, 85, 70, 15]
+# }
+# 
+# scatterplotdf = Scatterplot("df", 'shoe_price', 'coolness', df_test)
 
-
-# Testing df for left column input graphs
-data = {
-    "shoe_price" : [100, 150, 300, 550],
-    "coolness" : [80, 85, 70, 15]
-}
-
-df_test = pd.DataFrame(data)
-
-scatterplotdf = Scatterplot("df", 'shoe_price', 'coolness', df_test)
-
+def load_data():
+    df = pd.read_csv("Data/Raw/all_data.csv")
+    return df
 
 def generate_description_card():
     """
@@ -34,7 +34,6 @@ def generate_description_card():
         ],
     )
 
-
 def generate_control_card():
     """
 
@@ -43,22 +42,23 @@ def generate_control_card():
     return html.Details([
         html.Summary("Settings"),
         html.Div(
-        id="control-card",
-        children=[
-            html.Label("Graph background color"),
-            dcc.Dropdown(
-                id="select-color-scatter-1",
-                options=[{"label": i, "value": i} for i in color_list1],
-                value=color_list1[0],
-            ),
-            html.Br(),
-            html.Label("Color scatterplot 2"),
-            dcc.Dropdown(
-                id="select-color-scatter-2",
-                options=[{"label": i, "value": i} for i in color_list2],
-                value=color_list2[0],
-            ),
-        ], style={"textAlign": "float-left"}
+            id="control-card",
+            children=[
+                html.Label("Graph background color"),
+                dcc.Dropdown(
+                    id="select-color-scatter-1",
+                    options=[{"label": i, "value": i} for i in color_list1],
+                    value=color_list1[0],
+                ),
+                html.Br(),
+                html.Label("Color scatterplot 2"),
+                dcc.Dropdown(
+                    id="select-color-scatter-2",
+                    options=[{"label": i, "value": i} for i in color_list2],
+                    value=color_list2[0],
+                ),
+            ], 
+            style={"textAlign": "float-left"}
         )
     ])
 
@@ -66,10 +66,40 @@ def generate_input_graphs():
     """
     :return a Div containing graphs showing the client's submitted info
     """
+
+    fig_salary = Histogram(
+        'Monthly Inhand Salary', 
+        'Monthly_Inhand_Salary',
+        'Annual_Income', 
+        df,)
+    fig_interest = None
+    fig_loans = None
+    fig_debt = None
+    fig_cr_inq = None
+    fig_cr_mix = None
+    fig_CUR = None
+    fig_EMI = None
+
     return html.Div(
         id = "input-card",
-        children = scatterplotdf
+        children = [
+            html.Div(
+                id = "monthly-inhand",
+                children = [
+                    "Monthly Inhand Salary: ",
+                    fig_salary,
+                    html.Div([
+                        dcc.Input(
+                            id = 'salary-input', 
+                            value = None, type = 'text'
+                        )
+                    ])
+                ]
+            )
+        ]
     )
 
 def make_menu_layout():
     return [generate_description_card(), generate_control_card(), generate_input_graphs()]
+
+df = load_data()

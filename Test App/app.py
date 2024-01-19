@@ -1,54 +1,111 @@
-from dash import Dash, html, dcc
-from dash import Input, Output
-import plotly.express as px
 import pandas as pd
-import numpy as np
-app = Dash(__name__)
+from dash import dcc, html
+import plotly.express as px
+from dash.dependencies import Input, Output
 
-data = {
-    "shoe_price" : [100, 150, 300, 550],
-    "coolness" : [80, 85, 70, 15],
-    "female_attention" : [10, 30, 10, 5],
-    "year" : [2000, 2005, 2010, 2015]
-}
+from config.data import load_data
+from config.main import app
+from config.config import background_colors, plot_colors
+from config.config import Scatterplot
+from config.config import Histogram
 
-# fig = px.line(data, x = 'shoe_price', y = 'coolness')
+if __name__ == '__main__':
 
-# app.layout = html.Div(
-#     children = [
-#         html.H1(children = 'Hello World!'),
-#         html.Div(children = 'Some description'),
+    # Load dataset
+    df = load_data()
 
-#         dcc.Graph(
-#             id = 'graph',
-#             figure = fig
-#         )
-#     ]
-# )
+    # Create Input plots
+    fig_monthly_salary = Histogram('Monthly Inhand Salary Distribution', 'Monthly_Inhand_Salary', ' Monthly_Inhand_Salary', df, input)
 
-app.layout = html.Div([
-    dcc.Graph(id = 'scatter_plot'),
-    dcc.Slider(
-        min(data['year']),
-        max(data['year']),
-        step = None,
-        value = min(data['year']),
-        marks = {str(year): str(year) for year in np.unique(data['year'])},
-        id = 'slider'
-    ),
-])
+    app.layout = html.Div(
+        id = 'app-container',
+        children = [
 
-@app.callback(
-    Output('scatter_plot', 'figure'),
-    Input('slider', 'value')
-)
-def update_figure(input_year):
-    filter_df = data[data['year'] == input_year]
+            # Left Menu Column
+            html.Div(
+                id = 'left-column',
+                className = 'four-columns',
+                children = [
 
-    fig = px.scatter(filter_df, x = 'shoe_price', y = 'coolness',
-                     size = 'female_attention')
+                    # Description Card
+                    html.Div(
+                        id = 'description-card',
+                        children = [
+                            html.H5(
+                                "StandIn Name Dashboard"
+                            ),
+                            html.Div(
+                                id = 'intro',
+                                children = [
+                                    'Enter financial parameters below.'
+                                ]
+                            )
+                        ]
+                    ),
 
-    return fig
+                    # Collapsible Settings Menu
+                    html.Details([
+                        html.Summary("Settings"),
+                        html.Div(
+                            id = 'settins-card',
+                            children = [
+                                html.Label("Graph background color"),
+                                dcc.Dropdown(
+                                    id = "select-background-color",
+                                    options = [{"label": i, "value": i} for i in background_colors],
+                                    value = background_colors[0],
+                                ),
+                                html.Br(),
+                                html.Label("Graph plot color"),
+                                dcc.Dropdown(
+                                    id = 'select-plot-color',
+                                    options = [{"label": i, "value": i} for i in plot_colors],
+                                    value = plot_colors[0],
+                                )
+                            ],
+                            # style = {'textAlign' : 'float-left'}
+                        )
+                    ]),
 
-if __name__ == "__main__":
-    app.run_server(debug = True)
+                    # Monthly Salary Card
+                    html.Div(
+                        id = 'monthly-salary-card',
+                        children = [
+
+                            dcc.Input(
+                                id = 'salary-input',
+                                value = None,
+                                type = 'text'
+                            )
+                        ]
+                    )
+                ]
+            ),
+        
+
+            html.Div(
+                id = 'right-column',
+                className = 'eight-columns',
+                children = [
+                    html.Div(
+                        id = 'right-side',
+                        className = 'four-columns',
+                        children = [
+
+                        ]
+                    ),
+                    html.Div(
+                        id = 'left-side',
+                        className = 'four-columns',
+                        children = [
+
+                        ]
+                    )
+                ]
+            )
+        ]
+    )
+
+    # TODO : insert app.callback's for every reactive graph and input Div
+
+    app.run_server(debug = True, dev_tools_ui = True)

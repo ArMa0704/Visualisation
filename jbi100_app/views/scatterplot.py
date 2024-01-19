@@ -15,7 +15,7 @@ class Scatterplot(html.Div):
             children=[
                 html.H6(name),
                 dcc.Graph(id=self.html_id)
-            ],
+            ],  
         )
 
     def update(self, selected_color, selected_data):
