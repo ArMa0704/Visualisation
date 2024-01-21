@@ -6,8 +6,8 @@ from dash.dependencies import Input, Output
 from config.data import load_data
 from config.main import app
 from config.config import background_colors, plot_colors
-from config.config import Scatterplot
-from config.config import Histogram
+from config.views.scatterplot import Scatterplot
+from config.views.histogram import Histogram
 
 if __name__ == '__main__':
 
@@ -15,7 +15,15 @@ if __name__ == '__main__':
     df = load_data()
 
     # Create Input plots
-    fig_monthly_salary = Histogram('Monthly Inhand Salary Distribution', 'Monthly_Inhand_Salary', ' Monthly_Inhand_Salary', df, input)
+    fig_monthly_salary = Histogram('Monthly Inhand Salary Distribution', 'Monthly_Inhand_Salary', ' Monthly_Inhand_Salary', df, 'input')
+    fig_interest_rate = Histogram('Interest_Rate', 'Interest_Rate', 'Interest_Rate', df, 'input')
+    fig_nof_loans = Histogram('Number of Outstanding Loans',,, df, 'input')
+    fig_out_debt = Histogram()
+    fig_nof_cred_inq = Histogram()
+    fig_credit_mix = Histogram()
+    fig_CU_ratio = Histogram()
+    fig_EMI_month = Histogram()
+    fig_output_test = Histogram('Tester Plot', 'Monthly_Inhand_Salary', ' Monthly_Inhand_Salary', df, 'output')
 
     app.layout = html.Div(
         id = 'app-container',
@@ -24,7 +32,7 @@ if __name__ == '__main__':
             # Left Menu Column
             html.Div(
                 id = 'left-column',
-                className = 'four-columns',
+                className = 'four columns',
                 children = [
 
                     # Description Card
@@ -71,7 +79,7 @@ if __name__ == '__main__':
                     html.Div(
                         id = 'monthly-salary-card',
                         children = [
-
+                            # fig_monthly_salary,
                             dcc.Input(
                                 id = 'salary-input',
                                 value = None,
@@ -85,20 +93,20 @@ if __name__ == '__main__':
 
             html.Div(
                 id = 'right-column',
-                className = 'eight-columns',
+                className = 'eight columns',
                 children = [
                     html.Div(
                         id = 'right-side',
-                        className = 'four-columns',
+                        className = 'four columns',
                         children = [
-
+                            fig_output_test
                         ]
                     ),
                     html.Div(
                         id = 'left-side',
-                        className = 'four-columns',
+                        className = 'four columns',
                         children = [
-
+                            
                         ]
                     )
                 ]

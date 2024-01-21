@@ -19,19 +19,18 @@ class Histogram(html.Div):
         )
 
     def update(self, selected_data):
+        if self.type == 'input':
+            width = 10
+            height =  10
+        elif self.type == 'output':
+            width = 1000
+            height = 400
+        else:
+            raise ValueError('Parameter: "type" is invalid or inexecutable.')
+            
         self.fig = go.Figure()
-
         x_values = self.df[self.feature_x]
 
-        # trace = go.Histogram(
-        #     x = x_values,
-        #     xbins = dict(start = np.min(x_values), size = 10, end = np.max(x_values)),
-        #     marker = dict(color = 'rgb(0, 0, 80)')
-        # )
-
-        # layout = go.layout()
-
-        # self.fig = go.Figure(data = go.Data([trace]), layout = layout)
         self.fig.add_trace(go.Histogram(
             x = x_values,
             xbins = dict(start = np.min(x_values), size = 10, end = np.max(x_values)),
@@ -39,7 +38,7 @@ class Histogram(html.Div):
         ))
 
         self.fig.update_traces(marker = dict(color = 'rgb(0, 0, 80)'))
-        self.fig.update_layout(autosize = False, width = self.width, height = self.height)
+        self.fig.update_layout(autosize = False, width = width, height = height)
         self.fig.update_xaxes(fixedrange = True)
         self.fig.update_yaxes(fixedrange = True)
 
@@ -48,14 +47,5 @@ class Histogram(html.Div):
             yaxis_title = self.feature_y,
         )
 
-        if type == 'input':
-            width = None
-            height =  None
-        elif type == 'output':
-            width = None
-            height = None
-        else:
-            if type(type) is str:
-                raise ValueError('Variable : "type" has innapropriate value.')
 
         return self.fig
