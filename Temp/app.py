@@ -2,12 +2,10 @@ import dash
 from dash import html, dcc, Input, Output
 import plotly.express as px
 import pandas as pd
-
-# Example static dataset
-df = pd.DataFrame({
-    "Month": ["January", "February", "March", "April", "May", "June"],
-    "Value": [65, 59, 80, 81, 56, 55]
-})
+import numpy as np
+import scipy.stats as stats
+from collections import Counter
+from data import load_data
 
 dark_theme_style = {
     'backgroundColor': '#121212',  # Dark background color
@@ -24,10 +22,18 @@ chart_theme_style = {
     }
 }
 
+# Example static dataset
+df = load_data()
+
 # Function to create a sample chart
 def create_chart(title : str, plotType : str, var : str):
     if plotType == 'bar':
-        fig =  px.bar(df, x="Month", y="Value", title=title)
+        # Calculate Frq. Dist.
+        freqDist = Counter(df[var])
+        x = list(freqDist.keys())
+        y = list(freqDist.values())
+
+        fig =  px.bar(df, x = x, y = y , title = title)
     elif plotType == 'line':
         fig = px.line()
         
@@ -35,8 +41,8 @@ def create_chart(title : str, plotType : str, var : str):
     return fig
 
 # Creating bar and line charts using Plotly
-bar_chart = px.bar(df, x="Month", y="Value", title="Bar Chart")
-line_chart = px.line(df, x="Month", y="Value", title="Line Chart")
+# bar_chart = px.bar(df, x="Month", y="Value", title="Bar Chart")
+# line_chart = px.line(df, x="Month", y="Value", title="Line Chart")
 
 # Initialize the Dash app
 app = dash.Dash(__name__)
@@ -60,7 +66,7 @@ app.layout = html.Div(
     html.Div([
         # First row of graphs
         html.Div([
-            html.Div(dcc.Graph(figure = create_chart("Chart 1"), style = {'width' : '400px', 'height' : '350px'})),
+            html.Div(dcc.Graph(figure = create_chart('Delay from Due Date', 'bar', 'Delay_from_due_date'), style = {'width' : '400px', 'height' : '350px'})),
             html.Div(dcc.Graph(figure = create_chart("Chart 2"), style = {'width' : '400px', 'height' : '350px'})),
             html.Div(dcc.Graph(figure = create_chart("Chart 3"), style = {'width' : '400px', 'height' : '350px'})),
         ], style = {'display': 'flex', 'justifyContent': 'space-between'}),
