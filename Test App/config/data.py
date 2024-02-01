@@ -27,6 +27,7 @@ def load_data():
         print("\nDistribution of column:\n")
         print(df[column].value_counts())
 
+
     def fill_missing_with_group_mode(df, groupby, column):
         print("\nNo. of missing values before filling with group mode:", df[column].isnull().sum())
 
@@ -34,6 +35,7 @@ def load_data():
         df[column] = df[column].fillna(mode_per_group)
 
         print("\nNo. of missing values after filling with group mode:", df[column].isnull().sum())
+
 
     def clean_categorical_field(df, groupby, column, replace_value=None):
         print("\n-----------------------------------------------------")
@@ -44,6 +46,7 @@ def load_data():
             print(f"\nGarbage value {replace_value} is replaced with np.nan")
 
         fill_missing_with_group_mode(df, groupby, column)
+
 
     def fix_inconsistent_values(df, groupby, column):
         print("\nExisting Min, Max Values:", df[column].apply([min, max]), sep='\n', end='\n')
@@ -62,6 +65,7 @@ def load_data():
 
         print("\nAfter Cleaning Min, Max Values:", df[column].apply([min, max]), sep='\n', end='\n')
 
+
     def clean_numerical_field(df, groupby, column, strip=None, datatype=None, replace_value=None):
         print("\n-----------------------------------------------------")
         print("\nCleaning steps ")
@@ -76,6 +80,7 @@ def load_data():
             df[column] = df[column].astype(datatype)
         fix_inconsistent_values(df, groupby, column)
 
+
     def Month_Converter(val):
         if pd.notnull(val):
             years = int(val.split(' ')[0])
@@ -83,6 +88,7 @@ def load_data():
             return (years * 12) + month
         else:
             return val
+
 
     features_to_be_num = ['Num_of_Loan']
     for feature in features_to_be_num:
@@ -107,6 +113,11 @@ def load_data():
     group_by = 'Customer_ID'
     garbage_value = '!@9#%8'
     print('payment_behaviour')
+    clean_categorical_field(df, group_by, column_name, garbage_value)
+
+    column_name = 'Credit_Mix'
+    group_by = 'Customer_ID'
+    garbage_value = '_'
     clean_categorical_field(df, group_by, column_name, garbage_value)
 
     column_name = 'Age'
@@ -166,7 +177,17 @@ def load_data():
     clean_numerical_field(df, group_by, column_name, datatype=float, strip='_')
 
     df['Type_of_Loan'].replace([np.NaN], 'Not Specified', inplace=True)
+
+    column_name = 'Delay_from_due_date'
+    group_by = 'Customer_ID'
+    clean_numerical_field(df, group_by, column_name, datatype=float, strip='_')
+
+    column_name = 'Changed_Credit_Limit'
+    group_by = 'Customer_ID'
+    clean_numerical_field(df, group_by, column_name, strip='_', datatype='float', replace_value='_')
+
+    column_name = 'Total_EMI_per_month'
+    group_by = 'Customer_ID'
+    clean_numerical_field(df, group_by, column_name)
     return df
-
-
 
