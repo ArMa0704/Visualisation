@@ -141,7 +141,7 @@ def update_graphs(n_clicks, values, credit_mix_data):
             if val != None:
                 val = float(val)  # Ensure input is treated as numeric
                 std = np.std(df[column_name])
-                df = df[(df[column_name] < val + 1*std) & (df[column_name] > val - 1*std)]
+                df = df[(df[column_name] < val + std) & (df[column_name] > val - std)]
 
     if df.empty:
         div = [
