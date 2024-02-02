@@ -23,22 +23,18 @@ chart_theme_style = {
     }
 }
 
-# Assuming 'Data/Cleaned/cleaned_data.csv' is the correct path and the file exists.
 df = pd.read_csv('Data/Cleaned/cleaned_data.csv')
 
-print(df.empty)
 
-# Adjusted function to accept a DataFrame and use it for plotting
 def create_chart(filtered_df, title: str, plotType: str, var: str):
     if plotType == 'bar':
-        # Recalculate Frequency Distribution based on the filtered DataFrame
         freqDist = Counter(filtered_df[var])
         x = list(freqDist.keys())
         y = list(freqDist.values())
 
         fig = px.bar(x=x, y=y, labels={'x': var.replace('_', ' '), 'y': 'Frequency'}, title=title)
     elif plotType == 'line':
-        # Implement line plot logic as needed, using filtered_df
+        # Line plot section, functionality not pursued
         fig = px.line()
         
     fig.update_layout(**chart_theme_style)  # Apply dark theme styles to chart
@@ -63,7 +59,7 @@ app.layout = html.Div(
                     dbc.Button("Standard", id='credit-mix-standard', n_clicks=0, className="mr-1"),
                     dbc.Button("Good", id='credit-mix-good', n_clicks=0),
                 ], className = 'mb-3'),
-                dcc.Store(id='credit-mix-store'),  # This component will store the credit mix value
+                dcc.Store(id='credit-mix-store'),  # Component to  store the credit mix value
 
             ]),
             html.Div([html.P("Credit Utilisation Ratio:"), dcc.Input(id={'type': 'dynamic-input', 'index': 6}, type='number')]),
@@ -103,15 +99,14 @@ def update_credit_mix_store(bad_clicks, standard_clicks, good_clicks):
     Output('output-tab', 'children'),
     [Input('refresh-button', 'n_clicks')],
     [State({'type': 'dynamic-input', 'index': ALL}, 'value'),
-     State('credit-mix-store', 'data')]  # Add the credit mix store as a state
+     State('credit-mix-store', 'data')]
 )
 
 def update_graphs(n_clicks, values, credit_mix_data):
     if n_clicks == 0:
         raise PreventUpdate
 
-    df = pd.read_csv('Data/Cleaned/cleaned_data.csv')  # Reload to ensure it's fresh each time
-    print(df.empty)
+    df = pd.read_csv('Data/Cleaned/cleaned_data.csv')  # Reload to ensure the data is fresh each time
     graphs = []
 
     # Mapping from input index to DataFrame column name
@@ -132,28 +127,22 @@ def update_graphs(n_clicks, values, credit_mix_data):
     if credit_mix_data:
         credit_mix_value = credit_mix_data.get('credit_mix')
         df = df[df['Credit_Mix'] == credit_mix_value]
-    print(df.empty)
 
-    print(values)
+    # Compensate for the absence of the categorical variable Credit_Mix later
     values.insert(5, None)
-    print(values)
 
     for i, val in enumerate(values):
         if val is not None and val != "":  # Check for valid numeric input
             column_name = column_index[i + 1]  # Map index to column name
             
             if column_name == 'Credit_Mix':
-                print(df.empty)
                 continue
 
             if val != None:
-                # Apply filtering
                 val = float(val)  # Ensure input is treated as numeric
                 std = np.std(df[column_name])
                 df = df[(df[column_name] < val + 1*std) & (df[column_name] > val - 1*std)]
-                print(df.empty)
 
-    print(df.empty)
     if df.empty:
         div = [
             html.H2('Insufficient Comparison Data Available', style = {'color' : 'white'})
